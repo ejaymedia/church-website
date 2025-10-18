@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { Typewriter } from "react-simple-typewriter";
 
 const images = [
-  "/heroimages/hero1.jpg",
-  "/heroimages/hero2.jpg",
-  "/heroimages/hero3.jpg",
-  "/heroimages/hero4.jpg",
-  "/heroimages/hero5.jpg",
+  `${import.meta.env.BASE_URL}heroimages/hero1.jpg`,
+  `${import.meta.env.BASE_URL}heroimages/hero2.jpg`,
+  `${import.meta.env.BASE_URL}heroimages/hero3.jpg`,
+  `${import.meta.env.BASE_URL}heroimages/hero4.jpg`,
+  `${import.meta.env.BASE_URL}heroimages/hero5.jpg`,
 ];
 
 const Hero = () => {
