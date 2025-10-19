@@ -23,8 +23,8 @@ const Navbar = () => {
             <a href="#about" className="text-gray-700 hover:text-blue-600">
               About
             </a>
-            <a href="#events" className="text-gray-700 hover:text-blue-600">
-              Events
+            <a href="#programs" className="text-gray-700 hover:text-blue-600">
+              Programs
             </a>
 
             {/* Dropdown for Resources */}
@@ -54,8 +54,8 @@ const Navbar = () => {
               </div>
             </div>
 
-            <a href="#ministries" className="text-gray-700 hover:text-blue-600">
-              Ministries
+            <a href="#departments" className="text-gray-700 hover:text-blue-600">
+              Departments
             </a>
 
             <a href="#contact" className="text-gray-700 hover:text-blue-600">
