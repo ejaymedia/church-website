@@ -13,8 +13,6 @@ function App() {
         <section id="departments"><Departments /></section>
         <section id="pastorsection"><PastorSection /></section>
         <section id="contact"><ContactUs /></section>
-        {/* <section id="resources"><Resources /></section> */}
-        {/* <section id="donation"><Donation /></section> */}
       </main>
     </div>
   );
