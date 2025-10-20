@@ -3,7 +3,10 @@ import { Mail, Phone, MapPin } from "lucide-react";
 
 const ContactUs = () => {
   return (
-    <section id="contact" className="py-20 bg-gradient-to-b from-white to-[#f3fff5] border-t border-green-100">
+    <section
+      id="contact"
+      className="pt-20 pb-10 bg-gradient-to-b from-white to-[#f3fff5] border-t border-green-100"
+    >
       <div className="max-w-6xl mx-auto px-6 md:px-12 grid md:grid-cols-2 gap-12 items-start">
         
         {/* Left: Contact Form */}
@@ -17,16 +20,19 @@ const ContactUs = () => {
             <input
               type="text"
               placeholder="Full Name"
+              required
               className="w-full px-4 py-3 rounded-lg bg-white border border-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
             />
             <input
               type="email"
               placeholder="Email Address"
+              required
               className="w-full px-4 py-3 rounded-lg bg-white border border-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
             />
             <textarea
               placeholder="Type your message..."
               rows="4"
+              required
               className="w-full px-4 py-3 rounded-lg bg-white border border-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
             ></textarea>
 
@@ -68,14 +74,32 @@ const ContactUs = () => {
             <div>
               <p className="text-sm text-gray-500">Address</p>
               <p className="text-green-800 font-medium">
-                123 Church Avenue, ogbomoso, Nigeria
+                123 Church Avenue, Ogbomoso, Nigeria
               </p>
-              <a href="#" className="text-green-600 text-sm hover:underline font-medium">
+              <a
+                href="#"
+                className="text-green-600 text-sm hover:underline font-medium"
+              >
                 Get Directions →
               </a>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Copyright Footer */}
+      <div className="mt-16 border-t border-green-100 pt-6 text-center text-gray-600 text-sm">
+        <p>
+          © {new Date().getFullYear()} Church Name. All rights reserved. | Built with ❤️ by{" "}
+          <a
+            href="https://elijah.is-a.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-green-700 font-medium hover:underline hover:text-green-800 transition"
+          >
+            Ejay
+          </a>
+        </p>
       </div>
     </section>
   );
