@@ -15,7 +15,7 @@ const Hero = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % images.length);
-    }, 7000); // total slide duration
+    }, 7000);
     return () => clearInterval(interval);
   }, []);
 
@@ -35,11 +35,8 @@ const Hero = () => {
         ></div>
       ))}
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/40"></div>
-
-      {/* Gradient at bottom */}
-      <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black/70 to-transparent"></div>
+      {/* Green-tinted overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-green-900/40 via-black/50 to-black/70"></div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
@@ -60,19 +57,22 @@ const Hero = () => {
             delaySpeed={1500}
           />
         </h1>
-        <p className="max-w-2xl mx-auto mb-8 text-sm md:text-lg">
+        <p className="max-w-2xl mx-auto mb-8 text-sm md:text-lg text-green-50">
           We are a community of believers dedicated to sharing hope and love.
           Our mission is to serve God and our neighbors with compassion and purpose.
         </p>
         <div className="flex space-x-4">
-          <button className="bg-white text-gray-900 px-6 py-2 rounded-full font-medium hover:bg-gray-200 transition">
+          <button className="bg-white text-green-800 px-6 py-2 rounded-full font-medium hover:bg-green-100 border border-green-200 transition">
             Join us
           </button>
-          <button className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium hover:bg-blue-700 transition">
+          <button className="bg-green-700 text-white px-6 py-2 rounded-full font-medium hover:bg-green-800 transition">
             Watch live
           </button>
         </div>
       </div>
+
+      {/* Soft fade at bottom */}
+      <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-green-900/70 to-transparent"></div>
     </section>
   );
 };
