@@ -42,7 +42,7 @@ const PastorSection = () => {
           transition={{ type: "spring", stiffness: 120 }}
         >
           <img
-            src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=60"
+            src={`${import.meta.env.BASE_URL}pastorimage/pastor.jpg`}
             alt="Pastor John Doe"
             className="w-72 h-72 object-cover rounded-2xl shadow-xl border-4 border-green-100"
           />
