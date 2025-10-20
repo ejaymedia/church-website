@@ -74,7 +74,7 @@ const ContactUs = () => {
             <div>
               <p className="text-sm text-gray-500">Address</p>
               <p className="text-green-800 font-medium">
-                123 Church Avenue, Ogbomoso, Nigeria
+                123 Church Avenue, Ogbomoso, Nigeria.
               </p>
               <a
                 href="#"
