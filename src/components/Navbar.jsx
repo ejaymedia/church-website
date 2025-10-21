@@ -32,7 +32,7 @@ const Navbar = () => {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#home" className="text-green-800 hover:text-green-600 transition">
+              <a href="#" className="text-green-800 hover:text-green-600 transition">
                 Home
               </a>
               <a href="#about" className="text-green-800 hover:text-green-600 transition">
@@ -112,7 +112,7 @@ const Navbar = () => {
           }`}
         >
           <div className="px-4 pb-4 space-y-2">
-            <a href="#home" className="block text-green-800 hover:text-green-600 transition">
+            <a href="#" className="block text-green-800 hover:text-green-600 transition">
               Home
             </a>
             <a href="#about" className="block text-green-800 hover:text-green-600 transition">

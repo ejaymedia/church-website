@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Typewriter } from "react-simple-typewriter";
 
 const images = [
@@ -11,6 +12,7 @@ const images = [
 
 const Hero = () => {
   const [current, setCurrent] = useState(0);
+  const navigate = useNavigate(); // navigation function
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -65,7 +67,10 @@ const Hero = () => {
           <button className="bg-white text-green-800 px-6 py-2 rounded-full font-medium hover:bg-green-100 border border-green-200 transition">
             Join us
           </button>
-          <button className="bg-green-700 text-white px-6 py-2 rounded-full font-medium hover:bg-green-800 transition">
+          <button
+            onClick={() => navigate("/church-website/live")}
+            className="bg-green-700 text-white px-6 py-2 rounded-full font-medium hover:bg-green-800 transition"
+          >
             Watch live
           </button>
         </div>
