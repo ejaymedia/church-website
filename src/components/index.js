@@ -6,4 +6,5 @@ export { default as Departments } from "./Departments";
 export { default as PastorSection } from "./PastorSection";
 export { default as ContactUs } from "./ContactUs";
 export { default as Live } from "./Live";
-// export { default as Resources } from "./Resources";
+export { default as DepartmentsPage } from "./DepartmentsPage";
+export { default as Resources } from "./Resources";

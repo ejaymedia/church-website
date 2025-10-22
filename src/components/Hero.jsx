@@ -12,7 +12,7 @@ const images = [
 
 const Hero = () => {
   const [current, setCurrent] = useState(0);
-  const navigate = useNavigate(); // navigation function
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -20,6 +20,21 @@ const Hero = () => {
     }, 7000);
     return () => clearInterval(interval);
   }, []);
+
+  // Scroll to contact section
+  const handleJoinUsClick = () => {
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth" });
+    } else {
+      // if not on home page, navigate first
+      navigate("/church-website/");
+      setTimeout(() => {
+        const section = document.getElementById("contact");
+        section?.scrollIntoView({ behavior: "smooth" });
+      }, 500);
+    }
+  };
 
   return (
     <section className="relative h-screen w-full overflow-hidden">
@@ -59,14 +74,20 @@ const Hero = () => {
             delaySpeed={1500}
           />
         </h1>
+
         <p className="max-w-2xl mx-auto mb-8 text-sm md:text-lg text-green-50">
           We are a community of believers dedicated to sharing hope and love.
           Our mission is to serve God and our neighbors with compassion and purpose.
         </p>
+
         <div className="flex space-x-4">
-          <button className="bg-white text-green-800 px-6 py-2 rounded-full font-medium hover:bg-green-100 border border-green-200 transition">
+          <button
+            onClick={handleJoinUsClick}
+            className="bg-white text-green-800 px-6 py-2 rounded-full font-medium hover:bg-green-100 border border-green-200 transition"
+          >
             Join us
           </button>
+
           <button
             onClick={() => navigate("/church-website/live")}
             className="bg-green-700 text-white px-6 py-2 rounded-full font-medium hover:bg-green-800 transition"

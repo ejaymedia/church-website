@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const departments = [
   {
@@ -108,9 +109,12 @@ const Departments = () => {
         </div>
 
         <div className="text-center mt-8">
-          <button className="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition">
-            View More
-          </button>
+          <Link
+          to="/church-website/departments"
+          className="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition"
+          >
+          View More
+          </Link>
         </div>
       </div>
     </section>
