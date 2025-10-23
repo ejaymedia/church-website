@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const departments = [
   {
@@ -41,6 +41,7 @@ const departments = [
 
 const Departments = () => {
   const scrollRef = useRef(null);
+  const navigate = useNavigate();
 
   const scrollLeft = () => {
     if (scrollRef.current) {
@@ -52,6 +53,13 @@ const Departments = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
     }
+  };
+
+  const handleViewMore = () => {
+    navigate("/church-website/departments");
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100);
   };
 
   return (
@@ -109,12 +117,12 @@ const Departments = () => {
         </div>
 
         <div className="text-center mt-8">
-          <Link
-          to="/church-website/departments"
-          className="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition"
+          <button
+            onClick={handleViewMore}
+            className="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition"
           >
-          View More
-          </Link>
+            View More
+          </button>
         </div>
       </div>
     </section>

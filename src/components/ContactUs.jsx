@@ -5,7 +5,7 @@ const ContactUs = () => {
   return (
     <section
       id="contact"
-      className="pt-20 pb-10 bg-gradient-to-b from-white to-[#f3fff5] border-t border-green-100"
+      className="pt-20 bg-gradient-to-b from-white to-[#f3fff5] border-t border-green-100"
     >
       <div className="max-w-6xl mx-auto px-6 md:px-12 grid md:grid-cols-2 gap-12 items-start">
         
@@ -88,19 +88,17 @@ const ContactUs = () => {
       </div>
 
       {/* Copyright Footer */}
-      <div className="mt-16 border-t border-green-100 pt-6 text-center text-gray-600 text-sm">
-        <p>
-          © {new Date().getFullYear()} Church Name. All rights reserved. | Built with ❤️ by{" "}
-          <a
-            href="https://elijah.is-a.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-green-700 font-medium hover:underline hover:text-green-800 transition"
-          >
-            Ejay
-          </a>
-        </p>
-      </div>
+      <footer className="py-6 bg-green-700 text-white text-center text-sm mt-8">
+        © {new Date().getFullYear()} Church Name. All rights reserved. | Built with ❤️ by{" "}
+        <a
+          href="https://elijah.is-a.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-white font-medium text-decoration: underline hover:text-green-900 transition"
+        >
+          Ejay
+        </a>
+      </footer>
     </section>
   );
 };

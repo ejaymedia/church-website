@@ -1,35 +1,52 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import DonateModal from "./DonateModal";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [resourcesOpen, setResourcesOpen] = useState(false);
   const [showDonate, setShowDonate] = useState(false);
-  const dropdownRef = useRef(null);
+  const [active, setActive] = useState("home");
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const toggleMenu = () => setIsOpen(!isOpen);
-  const toggleResources = () => setResourcesOpen(!resourcesOpen);
-
-  // Close dropdown when clicking outside
+  // Detect active page
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setResourcesOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    if (location.pathname.includes("resources")) {
+      setActive("resources");
+    } else {
+      setActive("home");
+    }
+  }, [location.pathname]);
 
-  // Smooth navigation to resource sections
-  const handleResourceClick = (section) => {
-    navigate("/church-website/resources", { state: { section } });
-    setResourcesOpen(false);
+  // Scroll to top for home
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setActive("home");
     setIsOpen(false);
   };
+
+  // Handle click for internal sections
+  const handleClick = (section) => {
+    setActive(section);
+    setIsOpen(false);
+  };
+
+  // Go to resources page top
+  const goToResources = () => {
+    navigate("/church-website/resources");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setActive("resources");
+    setIsOpen(false);
+  };
+
+  // Divider centered under active link
+  const navItemStyle = (id) =>
+    `relative text-left text-green-800 hover:text-green-600 transition pb-1 inline-block w-fit ${
+      active === id
+        ? "after:content-[''] after:absolute after:left-0 after:right-0 after:mx-auto after:bottom-0 after:h-[2px] after:bg-green-700 after:rounded-full after:w-11 sm:after:w-2/3 md:after:w-3/4"
+        : ""
+    }`;
 
   return (
     <>
@@ -37,64 +54,40 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link to="/church-website/" className="text-2xl font-semibold italic text-green-700">
+            <Link
+              to="/church-website/"
+              onClick={scrollToTop}
+              className="text-2xl font-semibold italic text-green-700"
+            >
               Logo
             </Link>
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-8">
-              <Link to="/church-website/" className="text-green-800 hover:text-green-600 transition">
+              <button onClick={scrollToTop} className={navItemStyle("home")}>
                 Home
-              </Link>
-              <a href="#about" className="text-green-800 hover:text-green-600 transition">
+              </button>
+              <a href="#about" onClick={() => handleClick("about")} className={navItemStyle("about")}>
                 About
               </a>
-              <a href="#programs" className="text-green-800 hover:text-green-600 transition">
+              <a href="#programs" onClick={() => handleClick("programs")} className={navItemStyle("programs")}>
                 Programs
               </a>
-              <a href="#departments" className="text-green-800 hover:text-green-600 transition">
+              <a
+                href="#departments"
+                onClick={() => handleClick("departments")}
+                className={navItemStyle("departments")}
+              >
                 Departments
               </a>
-              <a href="#contact" className="text-green-800 hover:text-green-600 transition">
+              <a href="#contact" onClick={() => handleClick("contact")} className={navItemStyle("contact")}>
                 Contact Us
               </a>
 
-              {/* Dropdown for Resources */}
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={toggleResources}
-                  className="flex items-center gap-1 text-green-800 hover:text-green-600 focus:outline-none"
-                >
-                  Resources{" "}
-                  <ChevronDown
-                    size={16}
-                    className={`transition-transform ${resourcesOpen ? "rotate-180" : ""}`}
-                  />
-                </button>
-
-                {resourcesOpen && (
-                  <div className="absolute left-0 mt-2 w-40 flex flex-col bg-white border border-green-100 shadow-lg rounded-md overflow-hidden">
-                    <button
-                      onClick={() => handleResourceClick("sermon")}
-                      className="px-4 py-2 text-left text-green-700 hover:bg-green-50 transition"
-                    >
-                      Sermons
-                    </button>
-                    <button
-                      onClick={() => handleResourceClick("podcast")}
-                      className="px-4 py-2 text-left text-green-700 hover:bg-green-50 transition"
-                    >
-                      Podcast
-                    </button>
-                    <button
-                      onClick={() => handleResourceClick("articles")}
-                      className="px-4 py-2 text-left text-green-700 hover:bg-green-50 transition"
-                    >
-                      Articles
-                    </button>
-                  </div>
-                )}
-              </div>
+              {/* Resources button */}
+              <button onClick={goToResources} className={navItemStyle("resources")}>
+                Resources
+              </button>
 
               {/* Donate Button */}
               <button
@@ -105,82 +98,48 @@ const Navbar = () => {
               </button>
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Toggle Button */}
             <div className="md:hidden">
-              <button onClick={toggleMenu} className="text-green-700">
+              <button onClick={() => setIsOpen(!isOpen)} className="text-green-700">
                 {isOpen ? <X size={26} /> : <Menu size={26} />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Menu */}
         <div
           className={`md:hidden bg-white overflow-hidden transition-all duration-300 ease-in-out border-t border-green-100 ${
-            isOpen ? "max-h-[480px] opacity-100" : "max-h-0 opacity-0"
+            isOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="px-6 py-4 space-y-3">
-            <Link
-              to="/church-website/"
-              onClick={() => setIsOpen(false)}
-              className="block text-green-800 hover:text-green-600 transition font-medium"
-            >
+          <div className="flex flex-col px-6 py-4 space-y-4 text-left">
+            <button onClick={scrollToTop} className={navItemStyle("home")}>
               Home
-            </Link>
-            <a href="#about" className="block text-green-800 hover:text-green-600 transition font-medium">
+            </button>
+            <a href="#about" onClick={() => handleClick("about")} className={navItemStyle("about")}>
               About
             </a>
-            <a href="#programs" className="block text-green-800 hover:text-green-600 transition font-medium">
+            <a href="#programs" onClick={() => handleClick("programs")} className={navItemStyle("programs")}>
               Programs
             </a>
-            <a href="#departments" className="block text-green-800 hover:text-green-600 transition font-medium">
+            <a
+              href="#departments"
+              onClick={() => handleClick("departments")}
+              className={navItemStyle("departments")}
+            >
               Departments
             </a>
-            <a href="#contact" className="block text-green-800 hover:text-green-600 transition font-medium">
+            <a href="#contact" onClick={() => handleClick("contact")} className={navItemStyle("contact")}>
               Contact Us
             </a>
 
-            {/* Mobile Resources Dropdown */}
-            <div>
-              <button
-                onClick={toggleResources}
-                className="flex justify-between items-center w-full text-green-800 hover:text-green-600 font-medium"
-              >
-                <span>Resources</span>
-                <ChevronDown
-                  size={18}
-                  className={`transition-transform ${resourcesOpen ? "rotate-180" : ""}`}
-                />
-              </button>
+            {/* Resources Button */}
+            <button onClick={goToResources} className={navItemStyle("resources")}>
+              Resources
+            </button>
 
-              <div
-                className={`pl-4 mt-2 space-y-2 transition-all duration-300 ease-in-out ${
-                  resourcesOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
-                } overflow-hidden`}
-              >
-                <button
-                  onClick={() => handleResourceClick("sermon")}
-                  className="block text-green-700 hover:text-green-600 transition w-full text-left"
-                >
-                  Sermons
-                </button>
-                <button
-                  onClick={() => handleResourceClick("podcast")}
-                  className="block text-green-700 hover:text-green-600 transition w-full text-left"
-                >
-                  Podcast
-                </button>
-                <button
-                  onClick={() => handleResourceClick("articles")}
-                  className="block text-green-700 hover:text-green-600 transition w-full text-left"
-                >
-                  Articles
-                </button>
-              </div>
-            </div>
-
-            {/* Mobile Donate Button */}
+            {/* Donate Button */}
             <button
               onClick={() => {
                 setShowDonate(true);

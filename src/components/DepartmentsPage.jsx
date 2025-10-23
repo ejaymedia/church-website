@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const departments = [
   { title: "Royal Media", desc: "We keep records of sermons and events in Church..." },
@@ -29,18 +29,36 @@ const departments = [
 ];
 
 const DepartmentsPage = () => {
+  const navigate = useNavigate();
+  
+    const handleGoHome = () => {
+      navigate("/church-website/");
+      // Smoothly scroll to top after small delay for route change
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 100);
+    };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex flex-col">
       {/* Header */}
       <header className="bg-white shadow-md py-4 sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
-          <div className="text-2xl font-semibold italic text-green-700">Logo</div>
-          <Link
-            to="/church-website/"
+          {/* Logo */}
+          <button
+            onClick={handleGoHome}
+            className="text-2xl font-semibold italic text-green-700 focus:outline-none"
+          >
+            Logo
+          </button>
+
+          {/* Back Home Button */}
+          <button
+            onClick={handleGoHome}
             className="px-4 py-2 bg-green-700 text-white rounded-md hover:bg-green-800 transition"
           >
             Back Home
-          </Link>
+          </button>
         </div>
       </header>
 
@@ -98,7 +116,7 @@ const DepartmentsPage = () => {
 
       {/* Footer */}
       <footer className="py-6 bg-green-700 text-white text-center text-sm mt-8">
-        © {new Date().getFullYear()} All Rights Reserved | Built with ❤️ by{" "}
+        © {new Date().getFullYear()} Church Name. All rights reserved. | Built with ❤️ by{" "}
           <a
             href="https://elijah.is-a.dev"
             target="_blank"
