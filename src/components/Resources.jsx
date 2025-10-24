@@ -96,15 +96,15 @@ const Resources = () => {
 
       {/* Footer */}
       <footer className="py-6 bg-green-700 text-white text-center text-sm mt-8">
-        © {new Date().getFullYear()} All Rights Reserved | Built with ❤️ by{" "}
-        <a
-          href="https://elijah.is-a.dev"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-white font-medium underline hover:text-green-200 transition"
-        >
-          Ejay
-        </a>
+        © {new Date().getFullYear()} Church Name. All rights reserved. | Built with ❤️ by{" "}
+          <a
+            href="https://elijah.is-a.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white font-medium text-decoration: underline hover:text-green-900 transition"
+          >
+            Ejay
+          </a>
       </footer>
     </div>
   );

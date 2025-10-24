@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
 // Helper to calculate countdown
 const getTimeRemaining = (targetDate) => {
@@ -13,70 +15,6 @@ const getTimeRemaining = (targetDate) => {
 
   return { total, days, hours, minutes, seconds };
 };
-
-const programsData = [
-  // WEEKLY PROGRAMS
-  {
-    category: "weekly",
-    date: "2025-10-26T09:00:00",
-    day: "Sun 9:00 AM",
-    title: "Sunday Service",
-    location: "Main Auditorium",
-    description: "Join us every Sunday for worship, word, and fellowship.",
-  },
-  {
-    category: "weekly",
-    date: "2025-10-22T18:00:00",
-    day: "Wed 6:00 PM",
-    title: "Bible Study",
-    location: "Main Auditorium",
-    description: "An in-depth study of God's word and open discussions.",
-  },
-  {
-    category: "weekly",
-    date: "2025-10-25T16:00:00",
-    day: "Sat 4:00 PM",
-    title: "Choir Rehearsal",
-    location: "Music Room",
-    description: "Choir members gather weekly for practice and preparation.",
-  },
-
-  // MONTHLY PROGRAMS
-  {
-    category: "monthly",
-    date: "2025-11-01T08:00:00",
-    day: "1st Sat 8:00 AM",
-    title: "Workers' Meeting",
-    location: "Conference Hall",
-    description: "Monthly gathering for church workers and ministry leaders.",
-  },
-  {
-    category: "monthly",
-    date: "2025-10-25T22:00:00",
-    day: "Last Fri 10:00 PM",
-    title: "Night of Prayer",
-    location: "Main Auditorium",
-    description: "A monthly all-night prayer session seeking God's presence.",
-  },
-
-  // YEARLY PROGRAMS
-  {
-    category: "yearly",
-    date: "2026-03-15T08:00:00",
-    day: "Mar 15–17, 2026",
-    title: "Annual Convention",
-    location: "Church Grounds",
-    description: "Our biggest yearly event with guest ministers, worship, and outreach.",
-  },
-  {
-    category: "yearly",
-    date: "2025-12-31T21:00:00",
-    day: "Dec 31, 9:00 PM",
-    title: "Crossover Service",
-    location: "Main Auditorium",
-    description: "Join us to thank God for the past year and cross into the new one with joy.",
-  },
-];
 
 const Countdown = ({ date }) => {
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining(date));
@@ -110,6 +48,27 @@ const Countdown = ({ date }) => {
 
 const Programs = () => {
   const [activeCategory, setActiveCategory] = useState("weekly");
+  const [programsData, setProgramsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch programs from Firestore
+  useEffect(() => {
+    const fetchPrograms = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "programs"));
+        const fetched = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setProgramsData(fetched);
+      } catch (error) {
+        console.error("Error fetching programs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPrograms();
+  }, []);
 
   const filteredPrograms =
     activeCategory === "all"
@@ -159,33 +118,43 @@ const Programs = () => {
       </motion.div>
 
       {/* Programs List */}
-      <div className="space-y-6">
-        {filteredPrograms.map((program, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: i * 0.1 }}
-            className="flex flex-col md:flex-row items-center justify-between bg-white border border-green-100 rounded-xl p-5 shadow-sm hover:shadow-md transition"
-          >
-            <div className="flex items-center gap-6">
-              <div className="text-center border border-green-200 rounded-md px-3 py-2 bg-green-50">
-                <p className="text-sm font-semibold text-green-700">{program.day}</p>
+      {loading ? (
+        <p className="text-center text-gray-600 mt-8">Loading programs...</p>
+      ) : filteredPrograms.length === 0 ? (
+        <p className="text-center text-gray-600 mt-8">
+          No programs available for this category yet.
+        </p>
+      ) : (
+        <div className="space-y-6">
+          {filteredPrograms.map((program, i) => (
+            <motion.div
+              key={program.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.1 }}
+              className="flex flex-col md:flex-row items-center justify-between bg-white border border-green-100 rounded-xl p-5 shadow-sm hover:shadow-md transition"
+            >
+              <div className="flex items-center gap-6">
+                <div className="text-center border border-green-200 rounded-md px-3 py-2 bg-green-50">
+                  <p className="text-sm font-semibold text-green-700">
+                    {program.day}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-green-900">
+                    {program.title}
+                  </h3>
+                  <p className="text-green-700 text-sm">{program.location}</p>
+                  <p className="text-gray-700 text-sm mt-2 max-w-lg">
+                    {program.description}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-green-900">
-                  {program.title}
-                </h3>
-                <p className="text-green-700 text-sm">{program.location}</p>
-                <p className="text-gray-700 text-sm mt-2 max-w-lg">
-                  {program.description}
-                </p>
-              </div>
-            </div>
-            <Countdown date={program.date} />
-          </motion.div>
-        ))}
-      </div>
+              <Countdown date={program.date} />
+            </motion.div>
+          ))}
+        </div>
+      )}
     </section>
   );
 };

@@ -8,3 +8,5 @@ export { default as ContactUs } from "./ContactUs";
 export { default as Live } from "./Live";
 export { default as DepartmentsPage } from "./DepartmentsPage";
 export { default as Resources } from "./Resources";
+export { default as AdminLogin } from "./AdminLogin";
+export { default as AdminDashboard } from "./AdminDashboard";
