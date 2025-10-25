@@ -3,6 +3,7 @@ import { db } from "./firebase";
 import {
   doc,
   getDoc,
+  setDoc,
   updateDoc,
   addDoc,
   deleteDoc,
@@ -13,8 +14,6 @@ import {
 /* ===========================
    DONATION SETTINGS
 =========================== */
-
-// Fetch donation/bank details
 export const fetchBankDetails = async () => {
   try {
     const docRef = doc(db, "donationSettings", "donationDetails");
@@ -28,7 +27,6 @@ export const fetchBankDetails = async () => {
   }
 };
 
-// Update donation/bank details
 export const updateBankDetails = async (newData) => {
   try {
     const docRef = doc(db, "donationSettings", "donationDetails");
@@ -42,8 +40,6 @@ export const updateBankDetails = async (newData) => {
 /* ===========================
    PROGRAMS SETTINGS
 =========================== */
-
-// Fetch all programs
 export const fetchPrograms = async () => {
   try {
     const programsRef = collection(db, "programs");
@@ -55,19 +51,18 @@ export const fetchPrograms = async () => {
   }
 };
 
-// Add a new program
 export const addProgram = async (programData) => {
   try {
     const programsRef = collection(db, "programs");
-    await addDoc(programsRef, programData);
+    const docRef = await addDoc(programsRef, programData);
     console.log("Program added successfully!");
+    return docRef.id;
   } catch (error) {
     console.error("Error adding program:", error);
     throw error;
   }
 };
 
-// Update a program
 export const updateProgram = async (id, updatedData) => {
   try {
     const programRef = doc(db, "programs", id);
@@ -79,7 +74,6 @@ export const updateProgram = async (id, updatedData) => {
   }
 };
 
-// Delete a program
 export const deleteProgram = async (id) => {
   try {
     const programRef = doc(db, "programs", id);
@@ -94,26 +88,18 @@ export const deleteProgram = async (id) => {
 /* ===========================
    YOUTUBE LIVE LINK
 =========================== */
-
-// Fetch YouTube Live Link
 export const fetchYouTubeLink = async () => {
   try {
     const docRef = doc(db, "liveSettings", "youtubeLink");
     const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      return docSnap.data().url;
-    } else {
-      console.warn("No YouTube link found in Firestore!");
-      return null;
-    }
+    if (docSnap.exists()) return docSnap.data().url;
+    return null;
   } catch (error) {
     console.error("Error fetching YouTube link:", error);
     return null;
   }
 };
 
-// Update YouTube Live Link (for AdminDashboard)
 export const updateYouTubeLink = async (newUrl) => {
   try {
     const docRef = doc(db, "liveSettings", "youtubeLink");
@@ -121,5 +107,57 @@ export const updateYouTubeLink = async (newUrl) => {
     console.log("YouTube link updated successfully!");
   } catch (error) {
     console.error("Error updating YouTube link:", error);
+  }
+};
+
+/* ===========================
+   CONTACT MESSAGES
+=========================== */
+
+// Fetch all contact messages
+export const fetchContactMessages = async () => {
+  try {
+    const messagesRef = collection(db, "contactMessages");
+    const snapshot = await getDocs(messagesRef);
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error fetching contact messages:", error);
+    return [];
+  }
+};
+
+// Add a contact message
+export const addContactMessage = async (messageObj) => {
+  try {
+    const messagesRef = collection(db, "contactMessages");
+    await addDoc(messagesRef, { ...messageObj, read: false });
+    console.log("Contact message added successfully!");
+  } catch (error) {
+    console.error("Error adding contact message:", error);
+    throw error;
+  }
+};
+
+// Mark a message as read
+export const markMessageRead = async (id) => {
+  try {
+    const msgRef = doc(db, "contactMessages", id);
+    await updateDoc(msgRef, { read: true });
+    console.log("Message marked as read!");
+  } catch (error) {
+    console.error("Error marking message as read:", error);
+    throw error;
+  }
+};
+
+// Delete a message
+export const deleteMessage = async (id) => {
+  try {
+    const msgRef = doc(db, "contactMessages", id);
+    await deleteDoc(msgRef);
+    console.log("Message deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting message:", error);
+    throw error;
   }
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { useAuth } from "../context/AuthContext";
+import { markMessageRead, deleteMessage } from "../firestoreService";
 import {
   doc,
   getDoc,
@@ -13,7 +14,6 @@ import {
 } from "firebase/firestore";
 
 const AdminDashboard = () => {
-
   const [bankDetails, setBankDetails] = useState({
     building: { accountName: "", accountNumber: "", bank: "" },
     mission: { accountName: "", accountNumber: "", bank: "" },
@@ -34,43 +34,54 @@ const AdminDashboard = () => {
   const [youtubeLink, setYoutubeLink] = useState("");
   const [editProgramId, setEditProgramId] = useState(null);
 
+  const [contactMessages, setContactMessages] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [addingProgram, setAddingProgram] = useState(false);
   const [updatingProgram, setUpdatingProgram] = useState(false);
   const [savingYoutube, setSavingYoutube] = useState(false);
 
-  // Collapsible states (all collapsed initially)
   const [showBankSection, setShowBankSection] = useState(false);
   const [showProgramsSection, setShowProgramsSection] = useState(false);
   const [showYoutubeSection, setShowYoutubeSection] = useState(false);
+  const [showContactSection, setShowContactSection] = useState(false);
+
+  const { logout } = useAuth();
 
   // ------------------ FETCH DATA ------------------
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch bank details
+        // Bank details
         const bankRef = doc(db, "donationSettings", "donationDetails");
         const bankSnap = await getDoc(bankRef);
         if (bankSnap.exists()) setBankDetails(bankSnap.data());
 
-        // Fetch programs
+        // Programs
         const programsRef = collection(db, "programs");
-        const querySnapshot = await getDocs(programsRef);
-        const fetchedPrograms = querySnapshot.docs.map((doc) => ({
+        const programSnap = await getDocs(programsRef);
+        const fetchedPrograms = programSnap.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
         setPrograms(fetchedPrograms);
 
-        // Fetch YouTube link
+        // YouTube link
         const youtubeRef = doc(db, "liveSettings", "youtubeLink");
         const youtubeSnap = await getDoc(youtubeRef);
-        if (youtubeSnap.exists()) {
-          setYoutubeLink(youtubeSnap.data().url || "");
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+        if (youtubeSnap.exists()) setYoutubeLink(youtubeSnap.data().url || "");
+
+        // Contact messages
+        const contactRef = collection(db, "contactMessages");
+        const contactSnap = await getDocs(contactRef);
+        const fetchedMessages = contactSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setContactMessages(fetchedMessages);
+      } catch (err) {
+        console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
@@ -94,9 +105,9 @@ const AdminDashboard = () => {
     try {
       await setDoc(doc(db, "donationSettings", "donationDetails"), bankDetails);
       alert("Bank details updated successfully!");
-    } catch (error) {
-      console.error("Error updating bank details:", error.message);
-      alert("Failed to update bank details.");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update bank details");
     } finally {
       setSaving(false);
     }
@@ -109,15 +120,15 @@ const AdminDashboard = () => {
     try {
       await setDoc(doc(db, "liveSettings", "youtubeLink"), { url: youtubeLink });
       alert("YouTube link updated successfully!");
-    } catch (error) {
-      console.error("Error updating YouTube link:", error.message);
-      alert("Failed to update YouTube link.");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update YouTube link");
     } finally {
       setSavingYoutube(false);
     }
   };
 
-  // ------------------ PROGRAM MANAGEMENT ------------------
+  // ------------------ PROGRAMS ------------------
   const handleProgramChange = (e) => {
     const { name, value } = e.target;
     setProgram((prev) => ({ ...prev, [name]: value }));
@@ -127,8 +138,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     setAddingProgram(true);
     try {
-      const programsRef = collection(db, "programs");
-      const docRef = await addDoc(programsRef, program);
+      const docRef = await addDoc(collection(db, "programs"), program);
       setPrograms((prev) => [...prev, { id: docRef.id, ...program }]);
       alert("Program added successfully!");
       setProgram({
@@ -139,8 +149,8 @@ const AdminDashboard = () => {
         location: "",
         description: "",
       });
-    } catch (error) {
-      console.error("Error adding program:", error);
+    } catch (err) {
+      console.error(err);
     } finally {
       setAddingProgram(false);
     }
@@ -155,16 +165,13 @@ const AdminDashboard = () => {
   const handleUpdateProgram = async (e) => {
     e.preventDefault();
     if (!editProgramId) return;
-
     setUpdatingProgram(true);
     try {
       const docRef = doc(db, "programs", editProgramId);
       await updateDoc(docRef, program);
-
       setPrograms((prev) =>
         prev.map((p) => (p.id === editProgramId ? { id: editProgramId, ...program } : p))
       );
-
       alert("Program updated successfully!");
       setEditProgramId(null);
       setProgram({
@@ -175,8 +182,8 @@ const AdminDashboard = () => {
         location: "",
         description: "",
       });
-    } catch (error) {
-      console.error("Error updating program:", error);
+    } catch (err) {
+      console.error(err);
     } finally {
       setUpdatingProgram(false);
     }
@@ -184,17 +191,13 @@ const AdminDashboard = () => {
 
   const handleDeleteProgram = async (id) => {
     if (!window.confirm("Delete this program?")) return;
-
     try {
       await deleteDoc(doc(db, "programs", id));
       setPrograms((prev) => prev.filter((p) => p.id !== id));
-      alert("Program deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting program:", error);
+    } catch (err) {
+      console.error(err);
     }
   };
-
-  const { logout } = useAuth();
 
   if (loading)
     return (
@@ -223,7 +226,7 @@ const AdminDashboard = () => {
           </button>
         </div>
 
-        {/* ========== BANK DETAILS ========== */}
+        {/* Bank Details Section */}
         <div className="mb-8">
           <button
             onClick={() => setShowBankSection((prev) => !prev)}
@@ -232,7 +235,6 @@ const AdminDashboard = () => {
             <span className="text-lg font-semibold">Donation Bank Details</span>
             <span>{showBankSection ? "−" : "+"}</span>
           </button>
-
           {showBankSection && (
             <form
               onSubmit={handleSave}
@@ -278,7 +280,7 @@ const AdminDashboard = () => {
           )}
         </div>
 
-        {/* ========== YOUTUBE LINK ========== */}
+        {/* YouTube Section */}
         <div className="mb-8">
           <button
             onClick={() => setShowYoutubeSection((prev) => !prev)}
@@ -287,7 +289,6 @@ const AdminDashboard = () => {
             <span className="text-lg font-semibold">YouTube Live Link</span>
             <span>{showYoutubeSection ? "−" : "+"}</span>
           </button>
-
           {showYoutubeSection && (
             <form
               onSubmit={handleYoutubeSave}
@@ -305,9 +306,7 @@ const AdminDashboard = () => {
                   type="submit"
                   disabled={savingYoutube}
                   className={`px-8 py-3 rounded-full text-white transition ${
-                    savingYoutube
-                      ? "bg-green-400 cursor-not-allowed"
-                      : "bg-green-700 hover:bg-green-800"
+                    savingYoutube ? "bg-green-400 cursor-not-allowed" : "bg-green-700 hover:bg-green-800"
                   }`}
                 >
                   {savingYoutube ? "Saving..." : "Save YouTube Link"}
@@ -317,8 +316,8 @@ const AdminDashboard = () => {
           )}
         </div>
 
-        {/* ========== PROGRAMS SECTION ========== */}
-        <div>
+        {/* Programs Section */}
+        <div className="mb-8">
           <button
             onClick={() => setShowProgramsSection((prev) => !prev)}
             className="w-full flex justify-between items-center bg-green-700 text-white px-5 py-3 rounded-md"
@@ -329,7 +328,7 @@ const AdminDashboard = () => {
 
           {showProgramsSection && (
             <div className="mt-4 bg-white border border-green-100 rounded-lg shadow p-6">
-              {/* Program Form */}
+              {/* Add/Edit Program Form */}
               <form
                 onSubmit={editProgramId ? handleUpdateProgram : handleAddProgram}
                 className="space-y-6 mb-8"
@@ -371,7 +370,7 @@ const AdminDashboard = () => {
                   <input
                     type="text"
                     name="location"
-                    placeholder="Main Auditorium"
+                    placeholder="Location"
                     value={program.location}
                     onChange={handleProgramChange}
                     className="border border-green-200 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none"
@@ -385,7 +384,6 @@ const AdminDashboard = () => {
                     className="lg:col-span-3 border border-green-200 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none resize-none"
                   />
                 </div>
-
                 <div className="flex justify-center">
                   <button
                     type="submit"
@@ -414,9 +412,7 @@ const AdminDashboard = () => {
                     {cat} Programs
                   </h3>
                   {list.length === 0 ? (
-                    <p className="text-gray-500 italic text-sm">
-                      No {cat} programs yet.
-                    </p>
+                    <p className="text-gray-500 italic text-sm">No {cat} programs yet.</p>
                   ) : (
                     <div className="grid gap-4">
                       {list.map((p) => (
@@ -425,16 +421,10 @@ const AdminDashboard = () => {
                           className="bg-white border border-green-100 rounded-lg p-4 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between"
                         >
                           <div>
-                            <h4 className="font-semibold text-green-800">
-                              {p.title}
-                            </h4>
+                            <h4 className="font-semibold text-green-800">{p.title}</h4>
                             <p className="text-sm text-gray-600">{p.day}</p>
-                            <p className="text-sm text-gray-600">
-                              {p.location}
-                            </p>
-                            <p className="text-sm text-gray-700 mt-1">
-                              {p.description}
-                            </p>
+                            <p className="text-sm text-gray-600">{p.location}</p>
+                            <p className="text-sm text-gray-700 mt-1">{p.description}</p>
                           </div>
                           <div className="flex gap-2 mt-3 sm:mt-0">
                             <button
@@ -456,6 +446,70 @@ const AdminDashboard = () => {
                   )}
                 </div>
               ))}
+            </div>
+          )}
+        </div>
+
+        {/* Contact Messages Section */}
+        <div className="mb-8">
+          <button
+            onClick={() => setShowContactSection((prev) => !prev)}
+            className="w-full flex justify-between items-center bg-green-700 text-white px-5 py-3 rounded-md"
+          >
+            <span className="text-lg font-semibold">Contact Messages</span>
+            <span>{showContactSection ? "−" : "+"}</span>
+          </button>
+
+          {showContactSection && (
+            <div className="mt-4 bg-white border border-green-100 rounded-lg shadow p-6">
+              {contactMessages.length === 0 ? (
+                <p className="text-gray-500 italic text-sm">No messages yet.</p>
+              ) : (
+                <div className="space-y-4">
+                  {contactMessages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`border p-3 rounded-md shadow-sm flex justify-between items-start ${
+                        msg.read ? "bg-gray-50" : "bg-green-50"
+                      }`}
+                    >
+                      <div>
+                        <p className="font-semibold text-green-800">{msg.fullName}</p>
+                        <p className="text-sm text-gray-600">{msg.email}</p>
+                        <p className="mt-1">{msg.message}</p>
+                        <p className="text-xs mt-1 text-gray-500">
+                          Status: {msg.read ? "Read" : "Unread"}
+                        </p>
+                      </div>
+                      <div className="flex flex-col gap-2 ml-4">
+                        {!msg.read && (
+                          <button
+                            onClick={async () => {
+                              await markMessageRead(msg.id);
+                              setContactMessages((prev) =>
+                                prev.map((m) => (m.id === msg.id ? { ...m, read: true } : m))
+                              );
+                            }}
+                            className="px-3 py-1 rounded bg-blue-600 text-white text-sm hover:bg-blue-700"
+                          >
+                            Mark as Read
+                          </button>
+                        )}
+                        <button
+                          onClick={async () => {
+                            if (!window.confirm("Delete this message?")) return;
+                            await deleteMessage(msg.id);
+                            setContactMessages((prev) => prev.filter((m) => m.id !== msg.id));
+                          }}
+                          className="px-3 py-1 rounded bg-red-600 text-white text-sm hover:bg-red-700"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
