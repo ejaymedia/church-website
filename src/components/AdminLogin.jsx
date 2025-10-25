@@ -15,7 +15,7 @@ const AdminLogin = () => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/church-website/admin-dashboard"); // redirect after successful login
+      navigate("/admin-dashboard"); // redirect after successful login
     } catch (err) {
       setError("Invalid email or password");
       console.error(err);

@@ -89,7 +89,7 @@ const Hero = () => {
           </button>
 
           <button
-            onClick={() => navigate("/church-website/live")}
+            onClick={() => navigate("/live")}
             className="bg-green-700 text-white px-6 py-2 rounded-full font-medium hover:bg-green-800 transition"
           >
             Watch live

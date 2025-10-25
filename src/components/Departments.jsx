@@ -56,7 +56,7 @@ const Departments = () => {
   };
 
   const handleViewMore = () => {
-    navigate("/church-website/departments");
+    navigate("/departments");
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }, 100);

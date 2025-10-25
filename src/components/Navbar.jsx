@@ -34,7 +34,7 @@ const Navbar = () => {
 
   // Go to resources page top
   const goToResources = () => {
-    navigate("/church-website/resources");
+    navigate("/resources");
     window.scrollTo({ top: 0, behavior: "smooth" });
     setActive("resources");
     setIsOpen(false);
