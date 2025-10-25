@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children }) => {
   const user = auth.currentUser;
 
   if (!user) {
-    return <Navigate to="/church-website/admin-login" replace />;
+    return <Navigate to="/admin-login" replace />;
   }
 
   return children;

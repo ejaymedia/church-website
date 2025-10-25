@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await signOut(auth);
     setCurrentUser(null);
-    navigate("/church-website/admin-login"); // redirect to login
+    navigate("/admin-login"); // redirect to login
   };
 
   return (
