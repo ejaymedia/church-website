@@ -21,6 +21,14 @@ const Hero = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const scrollToTop = () => {
+    if (window.location.pathname !== "/live") {
+      navigate("/live");
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   // Scroll to contact section
   const handleJoinUsClick = () => {
     const contactSection = document.getElementById("contact");
@@ -89,7 +97,7 @@ const Hero = () => {
           </button>
 
           <button
-            onClick={() => navigate("/live")}
+            onClick={scrollToTop}
             className="bg-green-700 text-white px-6 py-2 rounded-full font-medium hover:bg-green-800 transition"
           >
             Watch live

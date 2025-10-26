@@ -32,7 +32,7 @@ const DepartmentsPage = () => {
   const navigate = useNavigate();
   
     const handleGoHome = () => {
-      navigate("/church-website/");
+      navigate("/");
       // Smoothly scroll to top after small delay for route change
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });

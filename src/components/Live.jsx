@@ -54,8 +54,8 @@ const Live = () => {
   }, []);
 
   const scrollToTop = () => {
-    if (window.location.pathname !== "/church-website/") {
-      navigate("/church-website/");
+    if (window.location.pathname !== "/") {
+      navigate("/");
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }

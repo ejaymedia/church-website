@@ -1,4 +1,3 @@
-// src/firestoreService.js
 import { db } from "./firebase";
 import {
   doc,
@@ -113,8 +112,6 @@ export const updateYouTubeLink = async (newUrl) => {
 /* ===========================
    CONTACT MESSAGES
 =========================== */
-
-// Fetch all contact messages
 export const fetchContactMessages = async () => {
   try {
     const messagesRef = collection(db, "contactMessages");
@@ -126,7 +123,6 @@ export const fetchContactMessages = async () => {
   }
 };
 
-// Add a contact message
 export const addContactMessage = async (messageObj) => {
   try {
     const messagesRef = collection(db, "contactMessages");
@@ -138,7 +134,6 @@ export const addContactMessage = async (messageObj) => {
   }
 };
 
-// Mark a message as read
 export const markMessageRead = async (id) => {
   try {
     const msgRef = doc(db, "contactMessages", id);
@@ -150,7 +145,6 @@ export const markMessageRead = async (id) => {
   }
 };
 
-// Delete a message
 export const deleteMessage = async (id) => {
   try {
     const msgRef = doc(db, "contactMessages", id);
@@ -160,4 +154,100 @@ export const deleteMessage = async (id) => {
     console.error("Error deleting message:", error);
     throw error;
   }
+};
+
+// ========================
+// RESOURCES: SERMONS
+// ========================
+
+export const fetchSermons = async () => {
+  try {
+    const sermonsRef = collection(db, "resources", "sermons", "list");
+    const snapshot = await getDocs(sermonsRef);
+    const sermons = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    // Fetch viewMoreUrl from parent "resources/sermons" doc
+    const viewMoreDocRef = doc(db, "resources", "sermons");
+    const viewMoreDocSnap = await getDoc(viewMoreDocRef);
+    const viewMoreUrl = viewMoreDocSnap.exists() ? viewMoreDocSnap.data().viewMoreUrl : "#";
+
+    return { sermons, viewMoreUrl };
+  } catch (error) {
+    console.error("Error fetching sermons:", error);
+    return { sermons: [], viewMoreUrl: "#" };
+  }
+};
+
+export const addSermon = async (sermonData) => {
+  const sermonsRef = collection(db, "resources", "sermons", "list");
+  const docRef = await addDoc(sermonsRef, sermonData);
+  return docRef.id;
+};
+
+export const updateSermon = async (id, updatedData) => {
+  const sermonRef = doc(db, "resources", "sermons", "list", id);
+  await updateDoc(sermonRef, updatedData);
+};
+
+export const deleteSermon = async (id) => {
+  const sermonRef = doc(db, "resources", "sermons", "list", id);
+  await deleteDoc(sermonRef);
+};
+
+// View More Link for Sermons
+export const updateSermonViewMoreUrl = async (url) => {
+  const docRef = doc(db, "resources", "sermons");
+  await setDoc(docRef, { viewMoreUrl: url });
+};
+
+// ========================
+// RESOURCES: FREE EBOOKS
+// ========================
+
+export const fetchFreeEbooks = async () => {
+  const ebooksRef = collection(db, "resources", "ebooks", "free");
+  const snapshot = await getDocs(ebooksRef);
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+};
+
+export const addFreeEbook = async (ebookData) => {
+  const ebooksRef = collection(db, "resources", "ebooks", "free");
+  const docRef = await addDoc(ebooksRef, ebookData);
+  return docRef.id;
+};
+
+export const updateFreeEbook = async (id, updatedData) => {
+  const ebookRef = doc(db, "resources", "ebooks", "free", id);
+  await updateDoc(ebookRef, updatedData);
+};
+
+export const deleteFreeEbook = async (id) => {
+  const ebookRef = doc(db, "resources", "ebooks", "free", id);
+  await deleteDoc(ebookRef);
+};
+
+// ========================
+// RESOURCES: PREMIUM EBOOKS
+// ========================
+
+export const fetchPremiumEbooks = async () => {
+  const ebooksRef = collection(db, "resources", "ebooks", "premium");
+  const snapshot = await getDocs(ebooksRef);
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+};
+
+export const addPremiumEbook = async (ebookData) => {
+  const ebooksRef = collection(db, "resources", "ebooks", "premium");
+  const docRef = await addDoc(ebooksRef, ebookData);
+  return docRef.id;
+};
+
+export const updatePremiumEbook = async (id, updatedData) => {
+  const ebookRef = doc(db, "resources", "ebooks", "premium", id);
+  await updateDoc(ebookRef, updatedData);
+};
+
+export const deletePremiumEbook = async (id) => {
+  const ebookRef = doc(db, "resources", "ebooks", "premium", id);
+  await deleteDoc(ebookRef);
 };
