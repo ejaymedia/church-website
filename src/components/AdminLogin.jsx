@@ -23,12 +23,12 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-green-50">
+    <div className="flex justify-center items-center min-h-screen bg-green-50 px-4 sm:px-6 md:px-8">
       <form
         onSubmit={handleLogin}
-        className="bg-white shadow-lg rounded-xl p-8 w-full max-w-sm border border-green-100"
+        className="bg-white shadow-lg rounded-2xl p-6 sm:p-8 w-full max-w-md border border-green-100"
       >
-        <h2 className="text-2xl font-semibold text-green-800 text-center mb-6">
+        <h2 className="text-xl sm:text-2xl font-semibold text-green-800 text-center mb-6">
           Admin Login
         </h2>
 
@@ -45,7 +45,7 @@ const AdminLogin = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full border border-green-200 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none"
+            className="w-full border border-green-200 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none text-sm sm:text-base"
           />
         </div>
 
@@ -58,13 +58,13 @@ const AdminLogin = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full border border-green-200 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none"
+            className="w-full border border-green-200 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none text-sm sm:text-base"
           />
         </div>
 
         <button
           type="submit"
-          className="w-full bg-green-700 hover:bg-green-800 text-white font-medium py-2 rounded-md transition"
+          className="w-full bg-green-700 hover:bg-green-800 text-white font-medium py-2 rounded-md transition text-sm sm:text-base"
         >
           Login
         </button>

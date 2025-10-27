@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import DonateModal from "./DonateModal";
 
 const Navbar = () => {
@@ -10,7 +10,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Detect active page
   useEffect(() => {
     if (location.pathname.includes("resources")) {
       setActive("resources");
@@ -19,20 +18,31 @@ const Navbar = () => {
     }
   }, [location.pathname]);
 
-  // Scroll to top for home
+  // Scroll to section if on home page, otherwise go home first
+  const handleSectionClick = (section) => {
+    if (location.pathname !== "/") {
+      navigate("/"); // go home first
+      setTimeout(() => {
+        const el = document.getElementById(section);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 500);
+    } else {
+      const el = document.getElementById(section);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+    setActive(section);
+    setIsOpen(false);
+  };
+
   const scrollToTop = () => {
+    if (location.pathname !== "/") {
+      navigate("/");
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
     setActive("home");
     setIsOpen(false);
   };
 
-  // Handle click for internal sections
-  const handleClick = (section) => {
-    setActive(section);
-    setIsOpen(false);
-  };
-
-  // Go to resources page top
   const goToResources = () => {
     navigate("/resources");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -40,7 +50,6 @@ const Navbar = () => {
     setIsOpen(false);
   };
 
-  // Divider centered under active link
   const navItemStyle = (id) =>
     `relative text-left text-green-800 hover:text-green-600 transition pb-1 inline-block w-fit ${
       active === id
@@ -54,42 +63,45 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link
-              to="/church-website/"
+            <button
               onClick={scrollToTop}
               className="text-2xl font-semibold italic text-green-700"
             >
               Logo
-            </Link>
+            </button>
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-8">
               <button onClick={scrollToTop} className={navItemStyle("home")}>
                 Home
               </button>
-              <a href="#about" onClick={() => handleClick("about")} className={navItemStyle("about")}>
+              <button
+                onClick={() => handleSectionClick("about")}
+                className={navItemStyle("about")}
+              >
                 About
-              </a>
-              <a href="#programs" onClick={() => handleClick("programs")} className={navItemStyle("programs")}>
+              </button>
+              <button
+                onClick={() => handleSectionClick("programs")}
+                className={navItemStyle("programs")}
+              >
                 Programs
-              </a>
-              <a
-                href="#departments"
-                onClick={() => handleClick("departments")}
+              </button>
+              <button
+                onClick={() => handleSectionClick("departments")}
                 className={navItemStyle("departments")}
               >
                 Departments
-              </a>
-              <a href="#contact" onClick={() => handleClick("contact")} className={navItemStyle("contact")}>
+              </button>
+              <button
+                onClick={() => handleSectionClick("contact")}
+                className={navItemStyle("contact")}
+              >
                 Contact Us
-              </a>
-
-              {/* Resources button */}
+              </button>
               <button onClick={goToResources} className={navItemStyle("resources")}>
                 Resources
               </button>
-
-              {/* Donate Button */}
               <button
                 onClick={() => setShowDonate(true)}
                 className="px-4 py-2 rounded-md bg-green-700 text-white hover:bg-green-800 transition"
@@ -117,29 +129,33 @@ const Navbar = () => {
             <button onClick={scrollToTop} className={navItemStyle("home")}>
               Home
             </button>
-            <a href="#about" onClick={() => handleClick("about")} className={navItemStyle("about")}>
+            <button
+              onClick={() => handleSectionClick("about")}
+              className={navItemStyle("about")}
+            >
               About
-            </a>
-            <a href="#programs" onClick={() => handleClick("programs")} className={navItemStyle("programs")}>
+            </button>
+            <button
+              onClick={() => handleSectionClick("programs")}
+              className={navItemStyle("programs")}
+            >
               Programs
-            </a>
-            <a
-              href="#departments"
-              onClick={() => handleClick("departments")}
+            </button>
+            <button
+              onClick={() => handleSectionClick("departments")}
               className={navItemStyle("departments")}
             >
               Departments
-            </a>
-            <a href="#contact" onClick={() => handleClick("contact")} className={navItemStyle("contact")}>
+            </button>
+            <button
+              onClick={() => handleSectionClick("contact")}
+              className={navItemStyle("contact")}
+            >
               Contact Us
-            </a>
-
-            {/* Resources Button */}
+            </button>
             <button onClick={goToResources} className={navItemStyle("resources")}>
               Resources
             </button>
-
-            {/* Donate Button */}
             <button
               onClick={() => {
                 setShowDonate(true);
