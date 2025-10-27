@@ -71,17 +71,17 @@ const Resources = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex flex-col text-sm md:text-base overflow-x-hidden">
       {/* Header */}
-      <header className="bg-white shadow-md py-4 sticky top-0 z-40">
+      <header className="bg-white shadow-md py-4 sticky top-0 z-40 w-full">
         <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
           <button
             onClick={handleGoHome}
-            className="text-2xl font-semibold italic text-green-700"
+            className="text-xl sm:text-2xl font-semibold italic text-green-700"
           >
             Logo
           </button>
           <button
             onClick={handleGoHome}
-            className="px-4 py-2 bg-green-700 text-white rounded-md hover:bg-green-800 transition"
+            className="px-3 sm:px-4 py-2 bg-green-700 text-white rounded-md hover:bg-green-800 transition text-xs sm:text-sm"
           >
             Back Home
           </button>
@@ -89,7 +89,7 @@ const Resources = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative h-64 md:h-80 bg-green-900 text-white flex items-center justify-center">
+      <section className="relative h-48 sm:h-64 md:h-80 bg-green-900 text-white flex items-center justify-center">
         <div className="absolute inset-0">
           <img
             src={`${import.meta.env.BASE_URL}heroimages/hero3.jpg`}
@@ -97,75 +97,72 @@ const Resources = () => {
             className="w-full h-full object-cover opacity-60"
           />
         </div>
-        <div className="relative z-10 text-center px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-2">Resources</h1>
-          <p className="text-green-100 max-w-2xl mx-auto text-sm md:text-base">
+        <div className="relative z-10 text-center px-3 sm:px-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2">
+            Resources
+          </h1>
+          <p className="text-green-100 max-w-2xl mx-auto text-xs sm:text-sm md:text-base">
             Explore sermons and ebooks to grow in faith and understanding.
           </p>
         </div>
       </section>
 
       {/* Main Content */}
-      <main className="flex-grow max-w-6xl mx-auto px-3 py-6 md:py-10">
+      <main className="flex-grow max-w-6xl mx-auto px-3 py-6 md:py-10 w-full">
         {/* Sermons */}
         <section id="sermons" className="mb-10">
-          <h2 className="text-xl md:text-2xl font-semibold text-green-800 mb-2 border-l-4 border-green-600 pl-2">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-green-800 mb-2 border-l-4 border-green-600 pl-2">
             Sermons
           </h2>
-          <p className="text-gray-700 mb-3 text-xs md:text-sm">
+          <p className="text-gray-700 mb-3 text-xs sm:text-sm">
             Watch inspiring sermons that strengthen your faith and deepen your
             walk with God.
           </p>
 
           {sermons.length > 0 ? (
             <>
-              {/* Horizontal scroll for mobile */}
-              <div className="overflow-x-auto sm:overflow-visible">
-                <div className="flex sm:grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  {sermons.map((sermon, index) => (
-                    <div
-                      key={index}
-                      className="bg-white rounded-md shadow-sm min-w-[250px] sm:min-w-0 overflow-hidden border border-green-100 hover:shadow-md transition"
+              <div className="flex overflow-x-auto space-x-3 pb-2 scrollbar-thin scrollbar-thumb-green-600 scrollbar-track-green-100">
+                {sermons.map((sermon, index) => (
+                  <div
+                    key={index}
+                    className="flex-none w-48 sm:w-60 bg-white rounded-md shadow-sm overflow-hidden border border-green-100 hover:shadow-md transition"
+                  >
+                    <a
+                      href={sermon.youtubeLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
+                      <img
+                        src={getYouTubeThumbnail(
+                          sermon.youtubeLink,
+                          sermon.thumbnail
+                        )}
+                        alt={sermon.title}
+                        className="w-full h-28 sm:h-32 object-cover"
+                      />
+                    </a>
+                    <div className="p-2 text-center">
+                      <h3 className="text-xs sm:text-sm font-semibold text-green-800 mb-1 truncate">
+                        {sermon.title}
+                      </h3>
                       <a
                         href={sermon.youtubeLink}
                         target="_blank"
                         rel="noopener noreferrer"
+                        className="text-green-700 text-xs hover:underline"
                       >
-                        <img
-                          src={getYouTubeThumbnail(
-                            sermon.youtubeLink,
-                            sermon.thumbnail
-                          )}
-                          alt={sermon.title}
-                          className="w-full h-32 object-cover"
-                        />
+                        Watch on YouTube
                       </a>
-                      <div className="p-2 text-center">
-                        <h3 className="text-xs md:text-sm font-semibold text-green-800 mb-1">
-                          {sermon.title}
-                        </h3>
-                        <a
-                          href={sermon.youtubeLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-green-700 text-xs hover:underline"
-                        >
-                          Watch on YouTube
-                        </a>
-                      </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-
-              {/* View More Button */}
-              <div className="w-full flex justify-center mt-6">
+              <div className="text-center mt-6">
                 <a
                   href={viewMoreUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block px-4 py-2 bg-green-700 text-white text-sm rounded-md hover:bg-green-800 transition text-center"
+                  className="inline-block px-4 py-2 bg-green-700 text-white text-xs sm:text-sm rounded-md hover:bg-green-800 transition"
                 >
                   View More
                 </a>
@@ -180,48 +177,46 @@ const Resources = () => {
 
         {/* Ebooks */}
         <section id="ebooks">
-          <h2 className="text-xl md:text-2xl font-semibold text-green-800 mb-3 border-l-4 border-green-600 pl-2">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-green-800 mb-3 border-l-4 border-green-600 pl-2">
             Ebooks
           </h2>
 
           {/* Free Ebooks */}
           <div className="mb-8">
-            <h3 className="text-lg md:text-xl font-semibold text-green-700 mb-2">
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold text-green-700 mb-2">
               Free Ebooks
             </h3>
             {freeEbooks.length > 0 ? (
-              <div className="overflow-x-auto sm:overflow-visible">
-                <div className="flex sm:grid sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {freeEbooks.map((ebook, index) => (
-                    <div
-                      key={index}
-                      className="bg-white rounded-md shadow-sm border min-w-[200px] sm:min-w-0 border-green-100 hover:shadow-md transition text-center"
-                    >
-                      <img
-                        src={ebook.imageLink}
-                        alt={ebook.title}
-                        className="w-full h-36 object-cover"
-                      />
-                      <div className="p-2">
-                        <h4 className="text-xs md:text-sm font-semibold text-green-800 mb-1">
-                          {ebook.title}
-                        </h4>
-                        <a
-                          href={
-                            ebook.downloadLink.startsWith("http")
-                              ? ebook.downloadLink
-                              : `https://${ebook.downloadLink}`
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-block px-2 py-1 bg-green-700 text-white text-xs rounded-md hover:bg-green-800 transition"
-                        >
-                          Download
-                        </a>
-                      </div>
+              <div className="flex overflow-x-auto space-x-3 pb-2 scrollbar-thin scrollbar-thumb-green-600 scrollbar-track-green-100">
+                {freeEbooks.map((ebook, index) => (
+                  <div
+                    key={index}
+                    className="flex-none w-36 sm:w-44 bg-white rounded-md shadow-sm border border-green-100 hover:shadow-md transition text-center"
+                  >
+                    <img
+                      src={ebook.imageLink}
+                      alt={ebook.title}
+                      className="w-full h-32 sm:h-36 object-cover"
+                    />
+                    <div className="p-2">
+                      <h4 className="text-xs sm:text-sm font-semibold text-green-800 mb-1 truncate">
+                        {ebook.title}
+                      </h4>
+                      <a
+                        href={
+                          ebook.downloadLink.startsWith("http")
+                            ? ebook.downloadLink
+                            : `https://${ebook.downloadLink}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block px-2 py-1 bg-green-700 text-white text-xs rounded-md hover:bg-green-800 transition"
+                      >
+                        Download
+                      </a>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             ) : (
               <p className="text-gray-500 text-center text-sm">
@@ -232,39 +227,37 @@ const Resources = () => {
 
           {/* Premium Ebooks */}
           <div>
-            <h3 className="text-lg md:text-xl font-semibold text-green-700 mb-2">
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold text-green-700 mb-2">
               Premium Ebooks
             </h3>
             {premiumEbooks.length > 0 ? (
-              <div className="overflow-x-auto sm:overflow-visible">
-                <div className="flex sm:grid sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {premiumEbooks.map((ebook, index) => (
-                    <div
-                      key={index}
-                      className="bg-white rounded-md shadow-sm border min-w-[200px] sm:min-w-0 border-green-100 hover:shadow-md transition text-center"
-                    >
-                      <img
-                        src={ebook.imageLink}
-                        alt={ebook.title}
-                        className="w-full h-36 object-cover"
-                      />
-                      <div className="p-2">
-                        <h4 className="text-xs md:text-sm font-semibold text-green-800 mb-1">
-                          {ebook.title}
-                        </h4>
-                        <p className="text-green-700 font-medium text-xs md:text-sm mb-1">
-                          {ebook.price}
-                        </p>
-                        <button
-                          onClick={() => openPaymentModal(ebook)}
-                          className="inline-block px-2 py-1 bg-green-700 text-white text-xs rounded-md hover:bg-green-800 transition"
-                        >
-                          Buy Now
-                        </button>
-                      </div>
+              <div className="flex overflow-x-auto space-x-3 pb-2 scrollbar-thin scrollbar-thumb-green-600 scrollbar-track-green-100">
+                {premiumEbooks.map((ebook, index) => (
+                  <div
+                    key={index}
+                    className="flex-none w-36 sm:w-44 bg-white rounded-md shadow-sm border border-green-100 hover:shadow-md transition text-center"
+                  >
+                    <img
+                      src={ebook.imageLink}
+                      alt={ebook.title}
+                      className="w-full h-32 sm:h-36 object-cover"
+                    />
+                    <div className="p-2">
+                      <h4 className="text-xs sm:text-sm font-semibold text-green-800 mb-1 truncate">
+                        {ebook.title}
+                      </h4>
+                      <p className="text-green-700 font-medium text-xs sm:text-sm mb-1">
+                        ₦{ebook.price}
+                      </p>
+                      <button
+                        onClick={() => openPaymentModal(ebook)}
+                        className="inline-block px-2 py-1 bg-green-700 text-white text-xs rounded-md hover:bg-green-800 transition"
+                      >
+                        Buy Now
+                      </button>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             ) : (
               <p className="text-gray-500 text-center text-sm">
@@ -286,7 +279,7 @@ const Resources = () => {
               You’re about to purchase{" "}
               <span className="font-medium">{selectedEbook.title}</span> for{" "}
               <span className="text-green-700 font-semibold">
-                {selectedEbook.price}
+                ₦{selectedEbook.price}
               </span>
               .
             </p>
@@ -311,7 +304,7 @@ const Resources = () => {
       )}
 
       {/* Footer */}
-      <footer className="py-6 bg-green-700 text-white text-center text-sm mt-8">
+      <footer className="py-6 bg-green-700 text-white text-center text-xs sm:text-sm mt-8">
         © {new Date().getFullYear()} Church Name. All rights reserved. | Built
         with ❤️ by{" "}
         <a
