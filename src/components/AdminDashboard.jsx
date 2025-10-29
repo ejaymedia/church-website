@@ -74,7 +74,7 @@ const AdminDashboard = () => {
   const [editFreeEbookId, setEditFreeEbookId] = useState(null);
 
   const [premiumEbooks, setPremiumEbooks] = useState([]); // array of {id, title, imageLink, price}
-  const [newPremiumEbook, setNewPremiumEbook] = useState({ title: "", imageLink: "", price: "" });
+  const [newPremiumEbook, setNewPremiumEbook] = useState({ title: "", imageLink: "", price: "", downloadLink: "" });
   const [editPremiumEbookId, setEditPremiumEbookId] = useState(null);
 
   const [savingSermon, setSavingSermon] = useState(false);
@@ -410,13 +410,13 @@ const AdminDashboard = () => {
 
   const handleAddPremiumEbook = async (e) => {
     e.preventDefault();
-    if (!newPremiumEbook.title || !newPremiumEbook.imageLink || !newPremiumEbook.price)
-      return alert("All fields required for premium ebook.");
+    if (!newPremiumEbook.title || !newPremiumEbook.imageLink || !newPremiumEbook.price || !newPremiumEbook.downloadLink)
+      return alert("All fields required for premium ebook (including download link).");
     setSavingEbook(true);
     try {
       const id = await addPremiumEbook(newPremiumEbook);
       setPremiumEbooks((prev) => [...prev, { id, ...newPremiumEbook }]);
-      setNewPremiumEbook({ title: "", imageLink: "", price: "" });
+      setNewPremiumEbook({ title: "", imageLink: "", price: "", downloadLink: "" });
       alert("Premium ebook added!");
     } catch (err) {
       console.error(err);
@@ -428,7 +428,7 @@ const AdminDashboard = () => {
 
   const handleEditPremiumEbook = (ebook) => {
     setEditPremiumEbookId(ebook.id);
-    setNewPremiumEbook({ title: ebook.title || "", imageLink: ebook.imageLink || "", price: ebook.price || "" });
+    setNewPremiumEbook({ title: ebook.title || "", imageLink: ebook.imageLink || "", price: ebook.price || "", downloadLink: ebook.downloadLink || "" });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -440,7 +440,7 @@ const AdminDashboard = () => {
       await updatePremiumEbook(editPremiumEbookId, newPremiumEbook);
       setPremiumEbooks((prev) => prev.map((p) => (p.id === editPremiumEbookId ? { id: editPremiumEbookId, ...newPremiumEbook } : p)));
       setEditPremiumEbookId(null);
-      setNewPremiumEbook({ title: "", imageLink: "", price: "" });
+      setNewPremiumEbook({ title: "", imageLink: "", price: "", downloadLink: "" });
       alert("Premium ebook updated!");
     } catch (err) {
       console.error(err);
@@ -696,14 +696,17 @@ const AdminDashboard = () => {
               <div>
                 <h3 className="text-lg font-semibold text-green-800 mb-3">Sermon Videos</h3>
 
-                <form onSubmit={editSermonId ? handleUpdateSermon : handleAddSermon} className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+                <form
+                  onSubmit={editSermonId ? handleUpdateSermon : handleAddSermon}
+                  className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4"
+                >
                   <input
                     type="text"
                     name="title"
                     placeholder="Title"
                     value={newSermon.title}
                     onChange={handleSermonFieldChange}
-                    className="border border-green-200 rounded-md px-3 py-2 outline-none w-full md:col-span-1"
+                    className="border border-green-200 rounded-md px-3 py-2 outline-none w-full"
                   />
                   <input
                     type="text"
@@ -711,7 +714,7 @@ const AdminDashboard = () => {
                     placeholder="YouTube Link"
                     value={newSermon.youtubeLink}
                     onChange={handleSermonFieldChange}
-                    className="border border-green-200 rounded-md px-3 py-2 outline-none w-full md:col-span-2"
+                    className="border border-green-200 rounded-md px-3 py-2 outline-none w-full"
                   />
                   <input
                     type="text"
@@ -721,9 +724,18 @@ const AdminDashboard = () => {
                     onChange={handleSermonFieldChange}
                     className="border border-green-200 rounded-md px-3 py-2 outline-none w-full"
                   />
-                  <div className="md:col-span-4 flex gap-2">
-                    <button type="submit" className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 transition">
-                      {editSermonId ? (savingSermon ? "Updating..." : "Update Sermon") : (savingSermon ? "Adding..." : "Add Sermon")}
+                  <div className="flex flex-col sm:flex-row gap-2 md:col-span-4">
+                    <button
+                      type="submit"
+                      className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 transition w-full sm:w-auto"
+                    >
+                      {editSermonId
+                        ? savingSermon
+                          ? "Updating..."
+                          : "Update Sermon"
+                        : savingSermon
+                        ? "Adding..."
+                        : "Add Sermon"}
                     </button>
                     {editSermonId && (
                       <button
@@ -732,7 +744,7 @@ const AdminDashboard = () => {
                           setEditSermonId(null);
                           setNewSermon({ title: "", youtubeLink: "", thumbnail: "" });
                         }}
-                        className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition"
+                        className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition w-full sm:w-auto"
                       >
                         Cancel Edit
                       </button>
@@ -740,19 +752,36 @@ const AdminDashboard = () => {
                   </div>
                 </form>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
                   {sermons.length === 0 ? (
                     <p className="text-gray-500 italic">No sermons added yet.</p>
                   ) : (
                     sermons.map((s) => (
-                      <div key={s.id} className="border rounded p-3 flex gap-3 items-start">
-                        <img src={getYouTubeThumbnail(s.youtubeLink, s.thumbnail)} alt={s.title} className="w-32 h-20 object-cover rounded" />
+                      <div
+                        key={s.id}
+                        className="border rounded p-3 flex flex-col sm:flex-row gap-3 items-start"
+                      >
+                        <img
+                          src={getYouTubeThumbnail(s.youtubeLink, s.thumbnail)}
+                          alt={s.title}
+                          className="w-full sm:w-32 h-40 sm:h-20 object-cover rounded"
+                        />
                         <div className="flex-1">
                           <p className="font-semibold text-green-800">{s.title}</p>
                           <p className="text-xs text-gray-600 break-words">{s.youtubeLink}</p>
-                          <div className="mt-2 flex gap-2">
-                            <button onClick={() => handleEditSermon(s)} className="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700">Edit</button>
-                            <button onClick={() => handleDeleteSermon(s.id)} className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700">Delete</button>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            <button
+                              onClick={() => handleEditSermon(s)}
+                              className="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteSermon(s.id)}
+                              className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+                            >
+                              Delete
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -763,7 +792,7 @@ const AdminDashboard = () => {
                 {/* View More Link */}
                 <div className="mt-4">
                   <h4 className="font-semibold mb-2">"View More" Link (channel or playlist)</h4>
-                  <form onSubmit={handleSaveViewMoreUrl} className="flex gap-2">
+                  <form onSubmit={handleSaveViewMoreUrl} className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       placeholder="Channel or playlist URL"
@@ -771,7 +800,10 @@ const AdminDashboard = () => {
                       onChange={(e) => setViewMoreUrl(e.target.value)}
                       className="flex-1 border border-green-200 rounded-md px-3 py-2 outline-none"
                     />
-                    <button type="submit" className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 transition">
+                    <button
+                      type="submit"
+                      className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 transition w-full sm:w-auto"
+                    >
                       {savingViewMore ? "Saving..." : "Save"}
                     </button>
                   </form>
@@ -785,14 +817,17 @@ const AdminDashboard = () => {
                 {/* FREE EBOOKS */}
                 <div className="mb-6">
                   <h4 className="font-semibold mb-2">Add / Edit Free Ebook</h4>
-                  <form onSubmit={editFreeEbookId ? handleUpdateFreeEbook : handleAddFreeEbook} className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+                  <form
+                    onSubmit={editFreeEbookId ? handleUpdateFreeEbook : handleAddFreeEbook}
+                    className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4"
+                  >
                     <input
                       type="text"
                       name="title"
                       placeholder="Title"
                       value={newFreeEbook.title}
                       onChange={handleFreeEbookChange}
-                      className="border border-green-200 rounded-md px-3 py-2 outline-none"
+                      className="border border-green-200 rounded-md px-3 py-2 outline-none w-full"
                     />
                     <input
                       type="text"
@@ -800,7 +835,7 @@ const AdminDashboard = () => {
                       placeholder="Image URL"
                       value={newFreeEbook.imageLink}
                       onChange={handleFreeEbookChange}
-                      className="border border-green-200 rounded-md px-3 py-2 outline-none"
+                      className="border border-green-200 rounded-md px-3 py-2 outline-none w-full"
                     />
                     <input
                       type="text"
@@ -808,11 +843,20 @@ const AdminDashboard = () => {
                       placeholder="Download Link"
                       value={newFreeEbook.downloadLink}
                       onChange={handleFreeEbookChange}
-                      className="border border-green-200 rounded-md px-3 py-2 outline-none"
+                      className="border border-green-200 rounded-md px-3 py-2 outline-none w-full"
                     />
-                    <div className="flex gap-2">
-                      <button type="submit" className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 transition">
-                        {editFreeEbookId ? (savingEbook ? "Updating..." : "Update Free Ebook") : (savingEbook ? "Adding..." : "Add Free Ebook")}
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <button
+                        type="submit"
+                        className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 transition w-full sm:w-auto"
+                      >
+                        {editFreeEbookId
+                          ? savingEbook
+                            ? "Updating..."
+                            : "Update Free Ebook"
+                          : savingEbook
+                          ? "Adding..."
+                          : "Add Free Ebook"}
                       </button>
                       {editFreeEbookId && (
                         <button
@@ -821,7 +865,7 @@ const AdminDashboard = () => {
                             setEditFreeEbookId(null);
                             setNewFreeEbook({ title: "", imageLink: "", downloadLink: "" });
                           }}
-                          className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition"
+                          className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition w-full sm:w-auto"
                         >
                           Cancel Edit
                         </button>
@@ -829,18 +873,46 @@ const AdminDashboard = () => {
                     </div>
                   </form>
 
-                  <div className="grid md:grid-cols-3 gap-4">
+                  <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
                     {freeEbooks.length === 0 ? (
                       <p className="text-gray-500 italic">No free ebooks yet.</p>
                     ) : (
                       freeEbooks.map((f) => (
-                        <div key={f.id} className="border rounded p-3">
-                          <img src={f.imageLink} alt={f.title} className="w-full h-40 object-cover rounded mb-2" />
-                          <p className="font-semibold">{f.title}</p>
-                          <a href={f.downloadLink} target="_blank" rel="noreferrer" className="text-green-600 text-sm">Download</a>
-                          <div className="mt-2 flex gap-2">
-                            <button onClick={() => handleEditFreeEbook(f)} className="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700">Edit</button>
-                            <button onClick={() => handleDeleteFreeEbook(f.id)} className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700">Delete</button>
+                        <div
+                          key={f.id}
+                          className="border rounded p-3 flex flex-col sm:flex-row gap-3 items-start"
+                        >
+                          <img
+                            src={f.imageLink}
+                            alt={f.title}
+                            className="w-full sm:w-24 h-40 sm:h-24 object-cover rounded"
+                          />
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-green-800">{f.title}</h4>
+                            {f.downloadLink && (
+                              <a
+                                href={f.downloadLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-green-600 text-sm"
+                              >
+                                Download Link
+                              </a>
+                            )}
+                          </div>
+                          <div className="flex flex-row sm:flex-col gap-2">
+                            <button
+                              onClick={() => handleEditFreeEbook(f)}
+                              className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteFreeEbook(f.id)}
+                              className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+                            >
+                              Delete
+                            </button>
                           </div>
                         </div>
                       ))
@@ -851,43 +923,72 @@ const AdminDashboard = () => {
                 {/* PREMIUM EBOOKS */}
                 <div>
                   <h4 className="font-semibold mb-2">Add / Edit Premium Ebook</h4>
-                  <form onSubmit={editPremiumEbookId ? handleUpdatePremiumEbook : handleAddPremiumEbook} className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+                  <form
+                    onSubmit={
+                      editPremiumEbookId
+                        ? handleUpdatePremiumEbook
+                        : handleAddPremiumEbook
+                    }
+                    className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4"
+                  >
                     <input
                       type="text"
                       name="title"
                       placeholder="Title"
                       value={newPremiumEbook.title}
                       onChange={handlePremiumEbookChange}
-                      className="border border-green-200 rounded-md px-3 py-2 outline-none"
+                      className="border border-green-200 rounded-md px-3 py-2 outline-none w-full"
                     />
                     <input
                       type="text"
                       name="imageLink"
-                      placeholder="Image URL"
+                      placeholder="Image Link"
                       value={newPremiumEbook.imageLink}
                       onChange={handlePremiumEbookChange}
-                      className="border border-green-200 rounded-md px-3 py-2 outline-none"
+                      className="border border-green-200 rounded-md px-3 py-2 outline-none w-full"
                     />
                     <input
                       type="text"
                       name="price"
-                      placeholder="Price (₦)"
+                      placeholder="Price (e.g. 2000)"
                       value={newPremiumEbook.price}
                       onChange={handlePremiumEbookChange}
-                      className="border border-green-200 rounded-md px-3 py-2 outline-none"
+                      className="border border-green-200 rounded-md px-3 py-2 outline-none w-full"
                     />
-                    <div className="flex gap-2">
-                      <button type="submit" className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 transition">
-                        {editPremiumEbookId ? (savingEbook ? "Updating..." : "Update Premium Ebook") : (savingEbook ? "Adding..." : "Add Premium Ebook")}
+                    <input
+                      type="text"
+                      name="downloadLink"
+                      placeholder="Download Link"
+                      value={newPremiumEbook.downloadLink}
+                      onChange={handlePremiumEbookChange}
+                      className="border border-green-200 rounded-md px-3 py-2 outline-none w-full"
+                    />
+                    <div className="flex flex-col sm:flex-row gap-2 md:col-span-4">
+                      <button
+                        type="submit"
+                        className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 transition w-full sm:w-auto"
+                      >
+                        {editPremiumEbookId
+                          ? savingEbook
+                            ? "Updating..."
+                            : "Update Ebook"
+                          : savingEbook
+                          ? "Adding..."
+                          : "Add Ebook"}
                       </button>
                       {editPremiumEbookId && (
                         <button
                           type="button"
                           onClick={() => {
                             setEditPremiumEbookId(null);
-                            setNewPremiumEbook({ title: "", imageLink: "", price: "" });
+                            setNewPremiumEbook({
+                              title: "",
+                              imageLink: "",
+                              price: "",
+                              downloadLink: "",
+                            });
                           }}
-                          className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition"
+                          className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition w-full sm:w-auto"
                         >
                           Cancel Edit
                         </button>
@@ -895,18 +996,47 @@ const AdminDashboard = () => {
                     </div>
                   </form>
 
-                  <div className="grid md:grid-cols-3 gap-4">
+                  <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
                     {premiumEbooks.length === 0 ? (
-                      <p className="text-gray-500 italic">No premium ebooks yet.</p>
+                      <p className="text-gray-500 italic">No premium ebooks added yet.</p>
                     ) : (
                       premiumEbooks.map((p) => (
-                        <div key={p.id} className="border rounded p-3">
-                          <img src={p.imageLink} alt={p.title} className="w-full h-40 object-cover rounded mb-2" />
-                          <p className="font-semibold">{p.title}</p>
-                          <p className="text-green-700 font-medium">{p.price}</p>
-                          <div className="mt-2 flex gap-2">
-                            <button onClick={() => handleEditPremiumEbook(p)} className="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700">Edit</button>
-                            <button onClick={() => handleDeletePremiumEbook(p.id)} className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700">Delete</button>
+                        <div
+                          key={p.id}
+                          className="border rounded p-3 flex flex-col sm:flex-row gap-3 items-start"
+                        >
+                          <img
+                            src={p.imageLink}
+                            alt={p.title}
+                            className="w-full sm:w-24 h-40 sm:h-24 object-cover rounded"
+                          />
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-green-800">{p.title}</h4>
+                            <p className="text-sm text-gray-600">Price: ₦{p.price}</p>
+                            {p.downloadLink && (
+                              <a
+                                href={p.downloadLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-green-600 text-sm"
+                              >
+                                Download
+                              </a>
+                            )}
+                          </div>
+                          <div className="flex flex-row sm:flex-col gap-2">
+                            <button
+                              onClick={() => handleEditPremiumEbook(p)}
+                              className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeletePremiumEbook(p.id)}
+                              className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+                            >
+                              Delete
+                            </button>
                           </div>
                         </div>
                       ))

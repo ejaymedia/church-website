@@ -229,16 +229,24 @@ export const deleteFreeEbook = async (id) => {
 // ========================
 // RESOURCES: PREMIUM EBOOKS
 // ========================
-
 export const fetchPremiumEbooks = async () => {
   const ebooksRef = collection(db, "resources", "ebooks", "premium");
   const snapshot = await getDocs(ebooksRef);
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+    downloadLink: doc.data().downloadLink || "",
+  }));
 };
 
 export const addPremiumEbook = async (ebookData) => {
   const ebooksRef = collection(db, "resources", "ebooks", "premium");
-  const docRef = await addDoc(ebooksRef, ebookData);
+  const docRef = await addDoc(ebooksRef, {
+    title: ebookData.title,
+    price: ebookData.price,
+    image: ebookData.image,
+    downloadLink: ebookData.downloadLink || "",
+  });
   return docRef.id;
 };
 

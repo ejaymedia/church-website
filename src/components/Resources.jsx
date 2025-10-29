@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FlutterWaveButton } from "flutterwave-react-v3";
 import {
   fetchSermons,
   fetchFreeEbooks,
@@ -13,6 +14,7 @@ const Resources = () => {
   const [viewMoreUrl, setViewMoreUrl] = useState("#");
   const [freeEbooks, setFreeEbooks] = useState([]);
   const [premiumEbooks, setPremiumEbooks] = useState([]);
+  const [customerEmail, setCustomerEmail] = useState("");
 
   useEffect(() => {
     const loadData = async () => {
@@ -42,7 +44,10 @@ const Resources = () => {
     }, 100);
   };
 
-  const openPaymentModal = (ebook) => setSelectedEbook(ebook);
+  const openPaymentModal = (ebook) => {
+    setSelectedEbook(ebook);
+    setCustomerEmail(""); // Reset email input
+  };
   const closePaymentModal = () => setSelectedEbook(null);
 
   const getYouTubeVideoId = (url) => {
@@ -283,16 +288,53 @@ const Resources = () => {
               </span>
               .
             </p>
-            <button
-              className="w-full bg-green-700 text-white py-2 rounded-md hover:bg-green-800 transition text-sm"
-              onClick={() => {
-                alert(
-                  `Proceeding to payment for ${selectedEbook.title} (${selectedEbook.price}).`
-                );
+
+            {/* Email Input */}
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
+              required
+              className="w-full border border-green-300 rounded-md px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-green-600"
+            />
+
+            {/* Flutterwave Payment Button */}
+            <FlutterWaveButton
+              className={`w-full py-2 rounded-md text-sm transition ${
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)
+                  ? "bg-green-700 text-white hover:bg-green-800"
+                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
+              }`}
+              text="Pay Now"
+              currency="NGN"
+              amount={selectedEbook.price}
+              public_key={import.meta.env.VITE_FLUTTERWAVE_PUBLIC_KEY}
+              tx_ref={Date.now()}
+              payment_options="card,ussd,banktransfer"
+              customer={{
+                email: customerEmail,
               }}
-            >
-              Proceed to Payment
-            </button>
+              customizations={{
+                title: "Ebook Purchase",
+                description: selectedEbook.title,
+              }}
+              callback={(response) => {
+                const status = response?.status?.toLowerCase();
+                if (status === "successful" || status === "completed" || status === "success") {
+                  const downloadUrl = selectedEbook.downloadLink.startsWith("http")
+                    ? selectedEbook.downloadLink
+                    : `https://${selectedEbook.downloadLink}`;
+                  window.open(downloadUrl, "_blank");
+                } else {
+                  alert("Payment not completed. Please try again.");
+                  console.log("Flutterwave response:", response);
+                }
+              }}
+              onClose={() => console.log("Payment modal closed")}
+              disabled={!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)}
+            />
+
             <button
               onClick={closePaymentModal}
               className="mt-2 text-xs text-gray-500 hover:text-gray-700"
