@@ -325,7 +325,7 @@ const Resources = () => {
                   const downloadUrl = selectedEbook.downloadLink.startsWith("http")
                     ? selectedEbook.downloadLink
                     : `https://${selectedEbook.downloadLink}`;
-                  window.open(downloadUrl, "_blank");
+                  window.location.href = downloadUrl; // ✅ Redirect instead of opening a new tab
                 } else {
                   alert("Payment not completed. Please try again.");
                   console.log("Flutterwave response:", response);
